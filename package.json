@@ -12,6 +12,7 @@
     "@react-navigation/bottom-tabs": "5.4.7",
     "@react-navigation/native": "5.4.2",
     "@react-navigation/stack": "5.3.9",
+    "add": "2.0.6",
     "expo": "~37.0.3",
     "react": "~16.9.0",
     "react-dom": "~16.9.0",
@@ -22,7 +23,8 @@
     "react-native-safe-area-context": "0.7.3",
     "react-native-screens": "~2.2.0",
     "react-native-svg": "11.0.1",
-    "react-native-web": "~0.11.7"
+    "react-native-web": "~0.11.7",
+    "yarn": "1.22.4"
   },
   "devDependencies": {
     "@babel/core": "^7.8.6",

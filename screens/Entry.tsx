@@ -1,9 +1,19 @@
-import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import React, { useEffect } from "react";
+import { View, Text, StyleSheet, StatusBar } from "react-native";
+import { useTheme } from "@react-navigation/native";
 
 type Props = {};
 
 export function Entry(props: Props) {
+  const theme = useTheme();
+  useEffect(function updateStatusBar() {
+    StatusBar.setBarStyle("light-content", true);
+    return () =>
+      StatusBar.setBarStyle(
+        theme.dark ? "light-content" : "dark-content",
+        true
+      );
+  });
   return (
     <View style={styles.container}>
       <Text>Entry Screen</Text>

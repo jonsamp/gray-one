@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { TouchableOpacity } from "react-native";
+import { TouchableOpacity, StatusBar } from "react-native";
 import { AppearanceProvider, useColorScheme } from "react-native-appearance";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -71,6 +71,16 @@ function TabNavigator(props: any) {
 
 export function Navigation() {
   const scheme = useColorScheme();
+
+  useEffect(
+    function handleUpdateScheme() {
+      StatusBar.setBarStyle(
+        scheme === "dark" ? "light-content" : "dark-content",
+        true
+      );
+    },
+    [scheme]
+  );
 
   return (
     <AppearanceProvider>
