@@ -23,7 +23,7 @@ function TabNavigator(props: any) {
       tabBarOptions={{
         showLabel: false,
         style: {
-          backgroundColor: colors.black,
+          backgroundColor: "black",
         },
       }}
     >
