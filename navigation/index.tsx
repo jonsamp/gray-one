@@ -7,6 +7,11 @@ import { createNativeStackNavigator } from "react-native-screens/native-stack";
 import { Home } from "../screens/Home";
 import { Entry } from "../screens/Entry";
 import { Photos } from "../screens/Photos";
+import { colors } from "../styleguide";
+
+import { HomeIcon } from "./HomeIcon";
+import { AddIcon } from "./AddIcon";
+import { PhotoIcon } from "./PhotoIcon";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -18,11 +23,17 @@ function TabNavigator(props: any) {
       tabBarOptions={{
         showLabel: false,
         style: {
-          backgroundColor: "black",
+          backgroundColor: colors.black,
         },
       }}
     >
-      <Tab.Screen name="Home" component={Home} />
+      <Tab.Screen
+        name="Home"
+        component={Home}
+        options={{
+          tabBarIcon: (props) => <HomeIcon {...props} />,
+        }}
+      />
       <Tab.Screen
         name="NewEntry"
         component={NewEntry}
@@ -31,15 +42,28 @@ function TabNavigator(props: any) {
             return (
               <TouchableOpacity
                 {...innerProps}
+                style={{
+                  ...innerProps.style,
+                  justifyContent: "center",
+                  minWidth: 40,
+
+                  alignItems: "center",
+                }}
                 onPress={() => props.navigation.navigate("Entry")}
               >
-                <Text>NEW</Text>
+                <AddIcon />
               </TouchableOpacity>
             );
           },
         }}
       />
-      <Tab.Screen name="Photos" component={Photos} />
+      <Tab.Screen
+        name="Photos"
+        component={Photos}
+        options={{
+          tabBarIcon: (props) => <PhotoIcon {...props} />,
+        }}
+      />
     </Tab.Navigator>
   );
 }
@@ -47,7 +71,7 @@ function TabNavigator(props: any) {
 export function Navigation() {
   return (
     <NavigationContainer>
-      <Stack.Navigator>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Home" component={TabNavigator} />
         <Stack.Screen
           component={Entry}
