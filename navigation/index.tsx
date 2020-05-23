@@ -1,5 +1,6 @@
-import React from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import React, { useEffect } from "react";
+import { TouchableOpacity } from "react-native";
+import { AppearanceProvider, useColorScheme } from "react-native-appearance";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "react-native-screens/native-stack";
@@ -7,7 +8,7 @@ import { createNativeStackNavigator } from "react-native-screens/native-stack";
 import { Home } from "../screens/Home";
 import { Entry } from "../screens/Entry";
 import { Photos } from "../screens/Photos";
-import { colors } from "../styleguide";
+import { colors, darkTheme, defaultTheme } from "../styleguide";
 
 import { HomeIcon } from "./HomeIcon";
 import { AddIcon } from "./AddIcon";
@@ -69,16 +70,20 @@ function TabNavigator(props: any) {
 }
 
 export function Navigation() {
+  const scheme = useColorScheme();
+
   return (
-    <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Home" component={TabNavigator} />
-        <Stack.Screen
-          component={Entry}
-          name="Entry"
-          options={{ stackPresentation: "modal" }}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <AppearanceProvider>
+      <NavigationContainer theme={scheme === "dark" ? darkTheme : defaultTheme}>
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="Home" component={TabNavigator} />
+          <Stack.Screen
+            component={Entry}
+            name="Entry"
+            options={{ stackPresentation: "modal" }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </AppearanceProvider>
   );
 }
