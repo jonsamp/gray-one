@@ -1,14 +1,15 @@
-import React, { useEffect } from "react";
-import { TouchableOpacity, StatusBar } from "react-native";
-import { AppearanceProvider, useColorScheme } from "react-native-appearance";
+import React from "react";
+import { TouchableOpacity, View, Platform } from "react-native";
+import { useColorScheme } from "react-native-appearance";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "react-native-screens/native-stack";
+import { useSafeArea } from "react-native-safe-area-context";
 
 import { Home } from "../screens/Home";
 import { Entry } from "../screens/Entry";
 import { Photos } from "../screens/Photos";
-import { colors, darkTheme, defaultTheme } from "../styleguide";
+import { darkTheme, defaultTheme } from "../styleguide";
 
 import { HomeIcon } from "./HomeIcon";
 import { AddIcon } from "./AddIcon";
@@ -17,6 +18,30 @@ import { PhotoIcon } from "./PhotoIcon";
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 const NewEntry = () => null;
+
+function HomeStack() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="Entries"
+        component={Home}
+        options={{ headerLargeTitle: true }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+function PhotosStack() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="Photos"
+        component={Photos}
+        options={{ headerLargeTitle: true }}
+      />
+    </Stack.Navigator>
+  );
+}
 
 function TabNavigator(props: any) {
   return (
@@ -30,7 +55,7 @@ function TabNavigator(props: any) {
     >
       <Tab.Screen
         name="Home"
-        component={Home}
+        component={HomeStack}
         options={{
           tabBarIcon: (props) => <HomeIcon {...props} />,
         }}
@@ -46,9 +71,8 @@ function TabNavigator(props: any) {
                 style={{
                   ...innerProps.style,
                   justifyContent: "center",
-                  minWidth: 40,
-
                   alignItems: "center",
+                  flex: 1,
                 }}
                 onPress={() => props.navigation.navigate("Entry")}
               >
@@ -60,7 +84,7 @@ function TabNavigator(props: any) {
       />
       <Tab.Screen
         name="Photos"
-        component={Photos}
+        component={PhotosStack}
         options={{
           tabBarIcon: (props) => <PhotoIcon {...props} />,
         }}
@@ -69,31 +93,38 @@ function TabNavigator(props: any) {
   );
 }
 
+function MainStackNavigator() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Home" component={TabNavigator} />
+      <Stack.Screen
+        component={Entry}
+        name="Entry"
+        options={{ stackPresentation: "modal" }}
+      />
+    </Stack.Navigator>
+  );
+}
+
 export function Navigation() {
   const scheme = useColorScheme();
-
-  useEffect(
-    function handleUpdateScheme() {
-      StatusBar.setBarStyle(
-        scheme === "dark" ? "light-content" : "dark-content",
-        true
-      );
-    },
-    [scheme]
-  );
-
+  const insets = useSafeArea();
+  const theme = scheme === "dark" ? darkTheme : defaultTheme;
   return (
-    <AppearanceProvider>
-      <NavigationContainer theme={scheme === "dark" ? darkTheme : defaultTheme}>
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="Home" component={TabNavigator} />
-          <Stack.Screen
-            component={Entry}
-            name="Entry"
-            options={{ stackPresentation: "modal" }}
-          />
-        </Stack.Navigator>
+    <View
+      style={{
+        ...Platform.select({
+          android: {
+            paddingTop: insets.top,
+            backgroundColor: theme.colors.card,
+          },
+        }),
+        flex: 1,
+      }}
+    >
+      <NavigationContainer theme={theme}>
+        <MainStackNavigator />
       </NavigationContainer>
-    </AppearanceProvider>
+    </View>
   );
 }
