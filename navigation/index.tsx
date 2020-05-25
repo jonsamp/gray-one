@@ -25,7 +25,10 @@ function HomeStack() {
       <Stack.Screen
         name="Entries"
         component={Home}
-        options={{ headerLargeTitle: true }}
+        options={{
+          headerLargeTitle: true,
+          headerLargeTitleStyle: { fontFamily: "SansBold" },
+        }}
       />
     </Stack.Navigator>
   );
@@ -37,7 +40,10 @@ function PhotosStack() {
       <Stack.Screen
         name="Photos"
         component={Photos}
-        options={{ headerLargeTitle: true }}
+        options={{
+          headerLargeTitle: true,
+          headerLargeTitleStyle: { fontFamily: "SansBold" },
+        }}
       />
     </Stack.Navigator>
   );

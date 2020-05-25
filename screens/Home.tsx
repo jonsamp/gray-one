@@ -1,11 +1,58 @@
-import React from "react";
-import { ScrollView, Text, StyleSheet } from "react-native";
-import { useTheme } from "@react-navigation/native";
+import React, { useState, useEffect } from "react";
+import { ScrollView, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { format } from "date-fns";
+import AsyncStorage from "@react-native-community/async-storage";
+import { useTheme, NavigationProp } from "@react-navigation/native";
 
-type Props = {};
+type Props = {
+  navigation: NavigationProp<any>;
+};
 
 export function Home(props: Props) {
+  const { navigation } = props;
   const { colors } = useTheme();
+  const [entries, setEntries] = useState();
+
+  useEffect(function didUpdate() {
+    const getAllEntries = async () => {
+      let keys: string[] = [];
+      try {
+        const foundKeys = await AsyncStorage.getAllKeys();
+
+        foundKeys.forEach((foundKey) => {
+          if (foundKey.match("@grayOne/entries")) {
+            keys.push(foundKey);
+          }
+        });
+      } catch (e) {
+        console.log("error!", e);
+      }
+
+      let entries;
+
+      try {
+        entries = await AsyncStorage.multiGet(keys);
+        const formattedEntries = entries
+          .map((entry) => {
+            try {
+              return JSON.parse(entry[1]);
+            } catch (e) {
+              return null;
+            }
+          })
+          .filter(Boolean);
+
+        setEntries(formattedEntries);
+      } catch (e) {
+        console.log("error!", e);
+      }
+    };
+
+    getAllEntries();
+  });
+
+  // AsyncStorage.clear();
+
   return (
     <ScrollView
       style={[
@@ -15,25 +62,20 @@ export function Home(props: Props) {
         },
       ]}
     >
-      <Text style={{ color: colors.text }}>Entries Screen</Text>
-      <Text style={{ color: colors.text, fontSize: 32 }}>
-        The evolution of a process is directed by a pattern of rules called a
-        program. People create programs to direct processes. In effect, we
-        conjure the spirits of the computer with our spells. A computational
-        process is indeed much like a sorcerer’s idea of a spirit. It cannot be
-        seen or touched. It is not composed of master at all. However, it is
-        very real. It can perform intellectual work. It can answer questions. It
-        can affect the world by disbursing money at a bank or by controlling a
-        robot arm in a factory. The programs we use to conjure processes are
-        like a sorcerer’s spells. They are carefully composed from symbolic
-        expressions in arcane and esoteric programming languages that prescribe
-        the tasks we want our processes to perform. A computational process, in
-        a correctly working computer, executes programs precisely and
-        accurately. Thus, like the sorcerer’s apprentice, novice programmers
-        must learn to understand and to anticipate the consequences of their
-        conjuring. Even small errors (usually called bugs or glitches) in
-        programs can have complex and unanticipated consequences.
-      </Text>
+      {entries
+        ? entries
+            .sort((a, b) => b.createdAt - a.createdAt)
+            .map((entry) => (
+              <TouchableOpacity
+                key={entry.createdAt}
+                onPress={() => navigation.navigate("Entry", entry)}
+                style={{ padding: 16 }}
+              >
+                <Text>{format(entry.createdAt, "MMM dd yyyy @ hh:mma")}</Text>
+                <Text>{entry.title}</Text>
+              </TouchableOpacity>
+            ))
+        : null}
     </ScrollView>
   );
 }
