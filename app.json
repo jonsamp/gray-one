@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "gray-one",
+    "name": "Gray One",
     "slug": "gray-one",
     "platforms": ["ios", "android", "web"],
     "version": "1.0.0",
@@ -10,14 +10,20 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#1D1D1B"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": false,
+      "bundleIdentifier": "com.jonsamp.grayone",
+      "buildNumber": "1"
+    },
+    "android": {
+      "package": "com.jonsamp.grayone",
+      "versionCode": 1
     }
   }
 }
