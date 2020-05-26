@@ -8,6 +8,8 @@ import {
   TextInput,
   ScrollView,
   Image,
+  KeyboardAvoidingView,
+  Dimensions,
 } from "react-native";
 import { useActionSheet } from "@expo/react-native-action-sheet";
 import { useTheme, NavigationProp } from "@react-navigation/native";
@@ -28,6 +30,8 @@ type Props = {
 
 export function Entry(props: Props) {
   const { navigation, route } = props;
+  const screenHeight = Math.round(Dimensions.get("window").height);
+  const imageSize = screenHeight * 0.15;
   const { createdAt = new Date().getTime() } = route?.params ?? {};
   const theme: any = useTheme();
   const { showActionSheetWithOptions } = useActionSheet();
@@ -145,68 +149,80 @@ export function Entry(props: Props) {
           </TouchableOpacity>
         </View>
       </View>
-      <ScrollView
-        contentContainerStyle={[
-          styles.contentArea,
-          {
-            backgroundColor: colors.background,
-            flex: 1,
-            shadowColor: colors.shadow,
-          },
-        ]}
+      <KeyboardAvoidingView
+        behavior={Platform.OS == "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
       >
-        <View style={{ flex: 0 }}>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={[
-              styles.photoContainer,
-              styles.contentContainer,
-            ]}
-          >
-            {entryImages &&
-              entryImages.map((entryImage) => (
-                <Image
-                  style={styles.entryImage}
-                  key={entryImage.uri}
-                  source={{ uri: entryImage.uri }}
-                />
-              ))}
-            <TouchableOpacity
-              onPress={selectImageAsync}
-              style={[
-                styles.addPhoto,
-                { backgroundColor: colors.backgroundTertiary },
+        <ScrollView
+          contentContainerStyle={[
+            styles.contentArea,
+            {
+              backgroundColor: colors.background,
+              flex: 1,
+              shadowColor: colors.shadow,
+            },
+          ]}
+        >
+          <View style={{ flex: 0 }}>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={[
+                styles.photoContainer,
+                styles.contentContainer,
               ]}
             >
-              <View style={{ opacity: 0.5 }}>
-                <CameraIcon />
-              </View>
-            </TouchableOpacity>
-          </ScrollView>
-        </View>
-        <View style={[styles.contentContainer, { flex: 1 }]}>
-          <TextInput
-            style={[styles.titleInput, { color: colors.text }]}
-            placeholderTextColor={colors.placeholderText}
-            placeholder="Entry title"
-            returnKeyType="next"
-            defaultValue={entryTitle}
-            onChangeText={(text) => setEntryTitle(text)}
-            multiline
-            // TODO: onSubmitEditing, focus the next textinput
-            autoFocus={entryTitle === undefined}
-          />
-          <TextInput
-            style={[styles.bodyInput, { color: colors.text }]}
-            placeholder="A wonderful new entry..."
-            placeholderTextColor={colors.placeholderText}
-            multiline
-            defaultValue={entryBody}
-            onChangeText={(text) => setEntryBody(text)}
-          />
-        </View>
-      </ScrollView>
+              {entryImages &&
+                entryImages.map((entryImage) => (
+                  <Image
+                    style={[
+                      styles.entryImage,
+                      { height: imageSize, width: imageSize },
+                    ]}
+                    key={entryImage.uri}
+                    source={{ uri: entryImage.uri }}
+                  />
+                ))}
+              <TouchableOpacity
+                onPress={selectImageAsync}
+                style={[
+                  styles.addPhoto,
+                  {
+                    backgroundColor: colors.backgroundTertiary,
+                    height: imageSize,
+                    width: imageSize,
+                  },
+                ]}
+              >
+                <View style={{ opacity: 0.5 }}>
+                  <CameraIcon />
+                </View>
+              </TouchableOpacity>
+            </ScrollView>
+          </View>
+          <View style={[styles.contentContainer, { flex: 1 }]}>
+            <TextInput
+              style={[styles.titleInput, { color: colors.text }]}
+              placeholderTextColor={colors.placeholderText}
+              placeholder="Entry title"
+              returnKeyType="next"
+              defaultValue={entryTitle}
+              onChangeText={(text) => setEntryTitle(text)}
+              multiline
+              // TODO: onSubmitEditing, focus the next textinput
+              autoFocus={entryTitle === undefined}
+            />
+            <TextInput
+              style={[styles.bodyInput, { color: colors.text }]}
+              placeholder="A wonderful new entry..."
+              placeholderTextColor={colors.placeholderText}
+              multiline
+              defaultValue={entryBody}
+              onChangeText={(text) => setEntryBody(text)}
+            />
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </View>
   );
 }
@@ -234,26 +250,25 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontFamily: "SerifBold",
     lineHeight: 29,
+    textAlignVertical: "top",
   },
   bodyInput: {
     fontSize: 20,
     fontFamily: "SerifBook",
     lineHeight: 22,
     flex: 1,
+    textAlignVertical: "top",
+    paddingBottom: 48,
   },
   photoContainer: {
     flexDirection: "row",
   },
   addPhoto: {
-    height: 156,
-    width: 156,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 4,
   },
   entryImage: {
-    height: 156,
-    width: 156,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 4,
