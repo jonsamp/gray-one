@@ -9,41 +9,54 @@ import {
   ScrollView,
   Image,
 } from "react-native";
+import { useActionSheet } from "@expo/react-native-action-sheet";
 import { useTheme, NavigationProp } from "@react-navigation/native";
 import AsyncStorage from "@react-native-community/async-storage";
 import * as ImagePicker from "expo-image-picker";
 import { format } from "date-fns";
+import { Entry as EntryType } from "../common/types";
+import { deleteEntry } from "../common/storage";
 import { sg, Text } from "../styleguide";
+import { CameraIcon, MoreIcon } from "../components/Icons";
 
 type Props = {
   navigation: NavigationProp<any>;
   route: {
-    params: Entry;
+    params: EntryType;
   };
-};
-
-type Entry = {
-  createdAt?: Date;
-  title?: string;
-  body?: string;
-  images: {
-    cancelled: boolean;
-    height?: number;
-    type?: string;
-    uri?: string;
-    width?: number;
-  }[];
 };
 
 export function Entry(props: Props) {
   const { navigation, route } = props;
   const { createdAt = new Date().getTime() } = route?.params ?? {};
   const theme: any = useTheme();
+  const { showActionSheetWithOptions } = useActionSheet();
   const { colors } = theme;
 
   const [entryImages, setEntryImages] = useState(route?.params?.images ?? []);
   const [entryTitle, setEntryTitle] = useState(route?.params?.title);
   const [entryBody, setEntryBody] = useState(route?.params?.body);
+
+  function openActionSheet() {
+    const options = ["Delete", "Cancel"];
+    const destructiveButtonIndex = 0;
+    const cancelButtonIndex = 1;
+
+    showActionSheetWithOptions(
+      {
+        options,
+        cancelButtonIndex,
+        destructiveButtonIndex,
+      },
+      async (buttonIndex) => {
+        if (buttonIndex === 0) {
+          await deleteEntry(createdAt);
+
+          navigation.goBack();
+        }
+      }
+    );
+  }
 
   useEffect(function updateStatusBar() {
     if (Platform.OS === "ios") {
@@ -64,14 +77,21 @@ export function Entry(props: Props) {
       images: entryImages,
     };
 
-    try {
-      const jsonValue = JSON.stringify(entry);
-      await AsyncStorage.setItem(
-        `@grayOne/entries/${entry.createdAt}`,
-        jsonValue
-      );
-    } catch (e) {
-      alert("There was an error saving your entry: " + e);
+    const oneFieldPresent =
+      entry.title !== undefined ||
+      entry.body !== undefined ||
+      entry.images.length;
+
+    if (oneFieldPresent) {
+      try {
+        const jsonValue = JSON.stringify(entry);
+        await AsyncStorage.setItem(
+          `@grayOne/entries/${entry.createdAt}`,
+          jsonValue
+        );
+      } catch (e) {
+        alert("There was an error saving your entry: " + e);
+      }
     }
 
     navigation.goBack();
@@ -111,68 +131,82 @@ export function Entry(props: Props) {
         <Text fontFamily="SansBold" fontSize={16}>
           {format(createdAt, "E, MMM dd, yyyy")}
         </Text>
-        <TouchableOpacity onPress={onDonePress} style={styles.doneButton}>
-          <Text fontFamily="SansBold" fontSize={16}>
-            Done
-          </Text>
-        </TouchableOpacity>
+        <View style={sg.displayHorizontal}>
+          <TouchableOpacity
+            onPress={() => openActionSheet()}
+            style={styles.moreButton}
+          >
+            <MoreIcon />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={onDonePress} style={styles.doneButton}>
+            <Text fontFamily="SansBold" fontSize={16}>
+              Done
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
-      <View
-        style={[
+      <ScrollView
+        contentContainerStyle={[
           styles.contentArea,
           {
             backgroundColor: colors.background,
+            flex: 1,
             shadowColor: colors.shadow,
           },
         ]}
       >
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={[
-            styles.photoContainer,
-            styles.contentContainer,
-          ]}
-        >
-          {entryImages &&
-            entryImages.map((entryImage) => (
-              <Image
-                style={styles.entryImage}
-                key={entryImage.uri}
-                source={{ uri: entryImage.uri }}
-              />
-            ))}
-          <TouchableOpacity
-            onPress={selectImageAsync}
-            style={[
-              styles.addPhoto,
-              { backgroundColor: colors.backgroundSecondary },
+        <View style={{ flex: 0 }}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={[
+              styles.photoContainer,
+              styles.contentContainer,
             ]}
           >
-            <Text>Add photo</Text>
-          </TouchableOpacity>
-        </ScrollView>
-        <View style={styles.contentContainer}>
+            {entryImages &&
+              entryImages.map((entryImage) => (
+                <Image
+                  style={styles.entryImage}
+                  key={entryImage.uri}
+                  source={{ uri: entryImage.uri }}
+                />
+              ))}
+            <TouchableOpacity
+              onPress={selectImageAsync}
+              style={[
+                styles.addPhoto,
+                { backgroundColor: colors.backgroundTertiary },
+              ]}
+            >
+              <View style={{ opacity: 0.5 }}>
+                <CameraIcon />
+              </View>
+            </TouchableOpacity>
+          </ScrollView>
+        </View>
+        <View style={[styles.contentContainer, { flex: 1 }]}>
           <TextInput
-            style={styles.titleInput}
+            style={[styles.titleInput, { color: colors.text }]}
+            placeholderTextColor={colors.placeholderText}
             placeholder="Entry title"
             returnKeyType="next"
             defaultValue={entryTitle}
             onChangeText={(text) => setEntryTitle(text)}
             multiline
-            // TODO: only autofocus if there's an entry
             // TODO: onSubmitEditing, focus the next textinput
-            autoFocus={entryTitle !== undefined}
+            autoFocus={entryTitle === undefined}
           />
           <TextInput
-            style={styles.bodyInput}
+            style={[styles.bodyInput, { color: colors.text }]}
             placeholder="A wonderful new entry..."
+            placeholderTextColor={colors.placeholderText}
             multiline
             defaultValue={entryBody}
             onChangeText={(text) => setEntryBody(text)}
           />
         </View>
-      </View>
+      </ScrollView>
     </View>
   );
 }
@@ -187,21 +221,25 @@ const styles = StyleSheet.create({
   doneButton: {
     padding: 8,
   },
+  moreButton: {
+    padding: 8,
+    marginRight: 8,
+  },
   contentArea: {
     shadowOffset: { height: -2, width: 0 },
     shadowOpacity: 0.25,
     shadowRadius: 16,
   },
   titleInput: {
-    fontSize: 24,
+    fontSize: 28,
     fontFamily: "SerifBold",
     lineHeight: 29,
   },
   bodyInput: {
-    fontSize: 18,
+    fontSize: 20,
     fontFamily: "SerifBook",
     lineHeight: 22,
-    height: 1000,
+    flex: 1,
   },
   photoContainer: {
     flexDirection: "row",

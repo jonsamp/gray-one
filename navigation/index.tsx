@@ -6,7 +6,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "react-native-screens/native-stack";
 import { useSafeArea } from "react-native-safe-area-context";
 
-import { Home } from "../screens/Home";
+import { Entries } from "../screens/Entries";
 import { Entry } from "../screens/Entry";
 import { Photos } from "../screens/Photos";
 import { darkTheme, defaultTheme } from "../styleguide";
@@ -24,7 +24,7 @@ function HomeStack() {
     <Stack.Navigator>
       <Stack.Screen
         name="Entries"
-        component={Home}
+        component={Entries}
         options={{
           headerLargeTitle: true,
           headerLargeTitleStyle: { fontFamily: "SansBold" },

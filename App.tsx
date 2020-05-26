@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { StatusBar } from "react-native";
 import { useFonts } from "@use-expo/font";
 import { AppearanceProvider, useColorScheme } from "react-native-appearance";
+import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { enableScreens } from "react-native-screens";
 import { Navigation } from "./navigation";
@@ -32,7 +33,9 @@ export default function App() {
   return (
     <AppearanceProvider>
       <SafeAreaProvider>
-        <Navigation />
+        <ActionSheetProvider>
+          <Navigation />
+        </ActionSheetProvider>
       </SafeAreaProvider>
     </AppearanceProvider>
   );
