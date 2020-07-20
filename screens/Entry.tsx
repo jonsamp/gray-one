@@ -132,7 +132,7 @@ export function Entry(props: Props) {
           { justifyContent: "space-between" },
         ]}
       >
-        <Text fontFamily="SansBold" fontSize={16}>
+        <Text fontFamily='SansBold' fontSize={16}>
           {format(createdAt, "E, MMM dd, yyyy")}
         </Text>
         <View style={sg.displayHorizontal}>
@@ -143,7 +143,7 @@ export function Entry(props: Props) {
             <MoreIcon />
           </TouchableOpacity>
           <TouchableOpacity onPress={onDonePress} style={styles.doneButton}>
-            <Text fontFamily="SansBold" fontSize={16}>
+            <Text fontFamily='SansBold' fontSize={16}>
               Done
             </Text>
           </TouchableOpacity>
@@ -165,6 +165,7 @@ export function Entry(props: Props) {
         >
           <View style={{ flex: 0 }}>
             <ScrollView
+              keyboardShouldPersistTaps='always'
               horizontal
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={[
@@ -204,8 +205,8 @@ export function Entry(props: Props) {
             <TextInput
               style={[styles.titleInput, { color: colors.text }]}
               placeholderTextColor={colors.placeholderText}
-              placeholder="Entry title"
-              returnKeyType="next"
+              placeholder='Entry title'
+              returnKeyType='next'
               defaultValue={entryTitle}
               onChangeText={(text) => setEntryTitle(text)}
               multiline
@@ -214,7 +215,7 @@ export function Entry(props: Props) {
             />
             <TextInput
               style={[styles.bodyInput, { color: colors.text }]}
-              placeholder="A wonderful new entry..."
+              placeholder='A wonderful new entry...'
               placeholderTextColor={colors.placeholderText}
               multiline
               defaultValue={entryBody}
