@@ -23,11 +23,10 @@ function HomeStack() {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name="Entries"
+        name='Entries'
         component={Entries}
         options={{
           headerLargeTitle: true,
-          headerLargeTitleStyle: { fontFamily: "SansBold" },
         }}
       />
     </Stack.Navigator>
@@ -38,11 +37,10 @@ function PhotosStack() {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name="Photos"
+        name='Photos'
         component={Photos}
         options={{
           headerLargeTitle: true,
-          headerLargeTitleStyle: { fontFamily: "SansBold" },
         }}
       />
     </Stack.Navigator>
@@ -60,14 +58,14 @@ function TabNavigator(props: any) {
       }}
     >
       <Tab.Screen
-        name="Home"
+        name='Home'
         component={HomeStack}
         options={{
           tabBarIcon: (props) => <HomeIcon {...props} />,
         }}
       />
       <Tab.Screen
-        name="NewEntry"
+        name='NewEntry'
         component={NewEntry}
         options={{
           tabBarButton: (innerProps: any) => {
@@ -89,7 +87,7 @@ function TabNavigator(props: any) {
         }}
       />
       <Tab.Screen
-        name="Photos"
+        name='Photos'
         component={PhotosStack}
         options={{
           tabBarIcon: (props) => <PhotoIcon {...props} />,
@@ -102,10 +100,10 @@ function TabNavigator(props: any) {
 function MainStackNavigator() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Home" component={TabNavigator} />
+      <Stack.Screen name='Home' component={TabNavigator} />
       <Stack.Screen
         component={Entry}
-        name="Entry"
+        name='Entry'
         options={{ stackPresentation: "modal" }}
       />
     </Stack.Navigator>

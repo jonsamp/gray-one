@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import {
   View,
   StyleSheet,
-  StatusBar,
   Platform,
   TouchableOpacity,
   TextInput,
@@ -11,6 +10,7 @@ import {
   KeyboardAvoidingView,
   Dimensions,
 } from "react-native";
+import { StatusBar } from "expo-status-bar";
 import { useActionSheet } from "@expo/react-native-action-sheet";
 import { useTheme, NavigationProp } from "@react-navigation/native";
 import AsyncStorage from "@react-native-community/async-storage";
@@ -61,17 +61,6 @@ export function Entry(props: Props) {
       }
     );
   }
-
-  useEffect(function updateStatusBar() {
-    if (Platform.OS === "ios") {
-      StatusBar.setBarStyle("light-content", true);
-      return () =>
-        StatusBar.setBarStyle(
-          theme.dark ? "light-content" : "dark-content",
-          true
-        );
-    }
-  });
 
   async function onDonePress() {
     const entry = {
@@ -125,6 +114,7 @@ export function Entry(props: Props) {
         { backgroundColor: colors.backgroundSecondary },
       ]}
     >
+      {Platform.OS === "ios" && <StatusBar style={"light"} animated />}
       <View
         style={[
           styles.contentContainer,
@@ -154,6 +144,7 @@ export function Entry(props: Props) {
         style={{ flex: 1 }}
       >
         <ScrollView
+          keyboardShouldPersistTaps='always'
           contentContainerStyle={[
             styles.contentArea,
             {
