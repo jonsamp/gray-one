@@ -23,7 +23,7 @@
     },
     "android": {
       "package": "com.jonsamp.grayone",
-      "versionCode": 1
+      "versionCode": 2
     }
   }
 }
